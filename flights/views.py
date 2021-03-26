@@ -10,14 +10,18 @@ def index(request):
     })
 
 def flight(request, flight_id):
-    flight = Flight.objects.get(pk=flight_id)
-    return render (request, "flights/flight.html", {
-        "flight": flight,
-        # Related key (allows reverse search)
-        "passengers": flight.passengers.all(),
-        # Non-passenger context for people who are not on the flight
-        "non_passengers": Passenger.objects.exclude(flights=flight).all()
-    })
+    if Flight.objects.get(pk=flight_id).exists():
+        return render (request, "flights/flight.html", {
+            "flight": flight,
+            # Related key (allows reverse search)
+            "passengers": flight.passengers.all(),
+            # Non-passenger context for people who are not on the flight
+            "non_passengers": Passenger.objects.exclude(flights=flight).all()
+        })
+    else:
+        return render(request, "flights/flight.html", {
+            "flight": "There are no flights with this ID"
+        })
 
 def book(request, flight_id):
     if request.method == "POST":
